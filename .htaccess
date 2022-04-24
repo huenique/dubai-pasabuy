@@ -1,0 +1,11 @@
+RewriteEngine On
+
+# URL path overwrites
+RewriteRule ^admin/?$ /pasabuy/app/admin.php [QSA,NC,L]
+
+# Exclude the .php extension from URL paths.
+RewriteCond %{THE_REQUEST} /([^.]+)\.php [NC]
+RewriteRule ^ /%1 [NC,L,R]
+
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^ %{REQUEST_URI}.php [NC,L]
