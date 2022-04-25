@@ -1,5 +1,4 @@
 <?php
-
 $conn = get_db_connection();
 
 function get_db_connection() {

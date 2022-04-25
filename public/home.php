@@ -1,6 +1,6 @@
 <?php
 require_once "header.php";
-require_once(__DIR__ . "/db/connection.php");
+require_once __DIR__ . "/../db/connection.php";
 
 function display_items(mysqli $conn, string $table): void {
     $items = $conn->query("SELECT * FROM $table");

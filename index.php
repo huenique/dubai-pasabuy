@@ -1,3 +1,3 @@
 <?php
-require_once(__DIR__ . "/app/home.php");
+require_once __DIR__ . "/public/home.php";
 ?>
