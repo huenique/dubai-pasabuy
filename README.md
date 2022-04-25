@@ -1,4 +1,4 @@
-# pasabuy
+# dubai-pasabuy
 
 ## Setup
 
