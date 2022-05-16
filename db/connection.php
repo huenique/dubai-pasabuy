@@ -1,8 +1,6 @@
 <?php
-$conn = get_db_connection();
-
 function get_db_connection() {
-    $conn = new mysqli("localhost", "root", "", "pasabuy");
+    $conn = new mysqli("localhost", "root", "", "dubai_pasabuy");
 
     if ($err = $conn->connect_error) {
         die($err);
@@ -10,4 +8,6 @@ function get_db_connection() {
         return $conn; 
     }
 }
+
+$conn = get_db_connection();
 ?>

@@ -1,18 +1,18 @@
 <?php
-require_once "utils.php";
+require_once "paths.php";
 
 $newFilepath;
 
 if (isset($_POST["submitImage"])) {
     try {
-        $newFilepath = uploadImage($_FILES["imageFile"]["tmp_name"]);
-        notifyUser("Image Uploaded!", "success");
+        $newFilepath = upload_image($_FILES["imageFile"]["tmp_name"]);
+        echo "alert('upload success')";
     } catch (Exception $e) {
-        notifyUser($e->getMessage(), "error");
+        echo "alert($e)";
     }
 }
 
-function uploadImage(string $filepath): string
+function upload_image(string $filepath): string
 {
     $allowedTypes = [
         "image/png" => "png",
@@ -51,4 +51,3 @@ function uploadImage(string $filepath): string
     unlink($filepath);
     return join_paths($uploadDir, basename($newFilepath));
 }
-?>
