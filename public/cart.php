@@ -43,7 +43,7 @@ function display_cart_items(mysqli $conn, string $username, mysqli_stmt $stmt) {
                             <span id="value$itemId">{$cartDec[$itemId]}</span>
                             <button class="btn increase$itemId"><i data-feather="plus"></i></button>
                         </div>
-                        <form action="#" method="post">
+                        <form method="post">
                             <input
                                 id="input-value$itemId"
                                 style="display: none"
@@ -60,9 +60,9 @@ function display_cart_items(mysqli $conn, string $username, mysqli_stmt $stmt) {
             </div>
     
             <script>
-            let count$itemId = 0;
             const value$itemId = document.querySelector("#value$itemId");
             const btn$itemId = document.querySelectorAll(".btn");
+            let count$itemId = value$itemId.textContent;
             
             btn$itemId.forEach(function (btn$itemId) {
                 btn$itemId.addEventListener("click", function (e) {
@@ -93,7 +93,6 @@ function display_cart_items(mysqli $conn, string $username, mysqli_stmt $stmt) {
             CART_ITEMS;
         }
     }
-
 }
 
 // slider: quantity 

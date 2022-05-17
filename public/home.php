@@ -50,7 +50,7 @@ function display_items(mysqli $conn, string $table): void {
                 <p class="card-text">{$row["name"]}</p>
             </div>
         </div>
-        <form action="#" method="post">
+        <form method="post">
             <input style="display: none" value="{$row["id"]}" name="itemId">
             <button type="submit" class="btn btn-warning" name="addToCart">
                 ADD TO CART<i data-feather="shopping-cart"></i>
