@@ -1,9 +1,10 @@
 <?php
 require_once "header.php";
+require_once "navbar.php";
 require_once __DIR__ . "/../db/connection.php";
+require_once __DIR__ . "/../utils/session.php";
 
-session_start();
-$user = $_SESSION["sessionUser"];
+$user = get_session_user();
 
 echo $user . "<--display besides dashboard profile picture?";
 
@@ -16,14 +17,20 @@ if (array_key_exists("addToCart", $_POST)) {
 Utilities for making transactions with the database.
 */
 function add_to_cart(mysqli $conn, string $username, string $itemId) {
-    // echo "<script>alert('added to cart!')</script>";
-    
-    $cart = $conn->query("SELECT cart FROM users WHERE username='$username'");
-    // print_r($cart->fetch_assoc());
-    $cartItems = json_decode($cart->fetch_assoc()["cart"], true);
-    if (array_key_exists($itemId, $cartItems)) {
+    $cartResult = $conn->query("SELECT cart FROM users WHERE username='$username'");
+    $cartDec = json_decode($cartResult->fetch_assoc()["cart"], true);
+
+    if (!$cartDec)
+        $cartDec = array();
+
+    if (array_key_exists($itemId, $cartDec)) {
         echo "<script>alert('item already added to cart')</script>";
     } else {
+        $cartDec += [$itemId => "0"];
+        $cart = json_encode($cartDec);
+        $updateStmt = $conn->prepare("UPDATE users SET cart=? WHERE username=?");
+        $updateStmt->bind_param("ss", $cart, $username);
+        $updateStmt->execute();
         echo "<script>alert('added to cart')</script>";
     }
 }
@@ -37,23 +44,25 @@ function display_items(mysqli $conn, string $table): void {
     $items = $conn->query("SELECT * FROM $table");
     foreach ($items->fetch_all(MYSQLI_ASSOC) as $row) {
         echo <<<ITEM
-            <div class="card item-card">
-                <img src="../pasabuy/static/item.png" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <p class="card-text">{$row["name"]}</p>
-                </div>
+        <div class="card item-card">
+            <img src="./static/img/item.png" class="card-img-top" alt="..." />
+            <div class="card-body">
+                <p class="card-text">{$row["name"]}</p>
             </div>
-            <form action="#" method="post">
-                <input style="display: none" value="{$row["id"]}" name="itemId">
-                <button type="submit" class="btn btn-warning" name="addToCart">ADD TO CART<i data-feather="shopping-cart"></i></button>
-            </form>
+        </div>
+        <form action="#" method="post">
+            <input style="display: none" value="{$row["id"]}" name="itemId">
+            <button type="submit" class="btn btn-warning" name="addToCart">
+                ADD TO CART<i data-feather="shopping-cart"></i>
+            </button>
+        </form>
         ITEM;
     }
     $items->free_result();
 };
 ?>
 <title>Dubai Pasabuy</title>
-
+<?php display_navbar() ?>
 <div class="container">
     <h1>Pasabuy Today</h1>
 

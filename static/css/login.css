@@ -1,0 +1,63 @@
+*,
+*::before,
+*::after {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body{
+	background-color: #f1f8fc;
+}
+.container{
+	background-color: #EEE4AB ;
+	margin-top: 5%;
+	justify-content: center;
+	display:  flex;
+	width: 300px;
+	max-height: 100%;
+	border-radius: 10px;
+	padding: 20px;
+}
+
+
+.container .h2{
+	text-align: left;
+	font-size: 20px;
+
+}
+
+input, label, a{
+	display: flex;
+	flex-direction: column;
+}
+
+.field-input{
+	margin-top: 20px;
+}
+
+.btn{
+	/* background-color: #035397; */
+	border: none;
+	margin-top: 20px;
+}
+
+.btn:hover{
+	background-color: #E8630A;
+}
+
+img{
+	max-height: 100%;
+	max-width: 100%;
+}
+
+.pasabuy{
+	margin-right: auto;
+	margin-left: auto;
+	width: 300px;
+}
+
+a{
+	margin-top: 5px;
+	color: #E8630A;
+	text-decoration: none;
+}

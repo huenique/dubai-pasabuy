@@ -4,6 +4,11 @@ require_once __DIR__ . "/../db/connection.php";
 
 session_start();
 
+// redirect user to home if already authN
+if (isset($_SESSION['sessionUser'])) {
+    echo header("Location: home.php");
+}
+
 if (isset($_GET["login"])) {
     $username = $_GET["username"];
     $password = $_GET["password"];
@@ -15,34 +20,40 @@ if (isset($_GET["login"])) {
     if ($usercred) {
         if ($usercred["password"] != $password) {} else {
             $_SESSION['sessionUser'] = $usercred["username"];
-            echo header("Location: index.php");
+            echo header("Location: home.php");
         }
     } else {}
-    echo "<script>alert('not logged in!')</script>";
+    echo "<script>alert('incorrect email or password!')</script>";
 }
 ?>
 <title>Login</title>
-
+<link rel="stylesheet" href="./static/css/login.css" type="text/css" />
+<div class="pasabuy mt-4">
+    <img src="./static/img/pasabuy_logo.png" alt="Logo" />
+</div>
 <div class="container">
-    <div class="row mt-5 pt-5">
-        <div class="col align-self-start">
-        </div>
-        <div class="col align-self-center">
-            <h1 class="mt-5 pt-5">LOGIN</h1>
-            <form metho="get">
-                <div class="mb-3">
-                    <label for="username" class="form-label">USERNAME</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">PASSWORD</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn btn-dark" name="login">LOGIN</button>
-                <span><a type="submit" class="btn btn-outline-secondary" href="register.php">SIGN UP</a></span>
-            </form>
-        </div>
-        <div class="col align-self-end">
-        </div>
+    <div class="form-container">
+        <form method="get">
+            <div class="field-input">
+                <label class="form-label">E-mail:</label>
+                <input
+                    class="form-control"
+                    type="email"
+                    name="username"
+                    required
+                />
+                <label class="form-label mt-2">Password:</label>
+                <input
+                    class="form-control"
+                    type="password"
+                    name="password"
+                    required
+                />
+            </div>
+            <button class="btn btn-primary" type="submit" name="login">
+                LOG IN
+            </button>
+        </form>
+        <a href="register.php">New here? Sign Up!</a>
     </div>
 </div>
