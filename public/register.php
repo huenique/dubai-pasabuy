@@ -1,13 +1,10 @@
 <?php
 require_once "header.php";
 require_once __DIR__ . "/../db/connection.php";
+require_once __DIR__ . "/../utils/session.php";
 
 session_start();
-
-// redirect user to home if already authN
-if (isset($_SESSION['sessionUser'])) {
-    echo header("Location: home.php");
-}
+verify_session_user();
 
 $pwNotMatch = <<<PW_MISMATCH
 <label for="validationServerPw" class="form-label mt-2">
@@ -15,7 +12,7 @@ $pwNotMatch = <<<PW_MISMATCH
 </label>
 <div class="input-group has-validation">
     <input
-        name="password"
+        name="confirmPassword"
         type="password"
         class="form-control is-invalid"
         id="validationServerPw"
@@ -83,27 +80,24 @@ if (isset($_POST["signup"])) {
     $password = $_POST["password"];
     $confirmPassword = $_POST["confirmPassword"];
 
-    // ensure users recognize their password 
-    if ($password != $confirmPassword) {
+    // ensure users recognize their password
+    if ($password !== $confirmPassword) {
         $_SESSION["registerUsername"] = $username;
         echo header("Location: register.php");
-    }
-
-    if (isset($_SESSION["registerUsername"]))
-        $_SESSION["registerUsername"] = null;
-
-    // $user = $conn->query("SELECT * FROM users WHERE username='$username'") or die($conn->error);
-    $selectStmt->execute();
-    $result = $selectStmt->get_result();
-
-    if ($result->fetch_array(MYSQLI_NUM)) {
-        // notify_user("USERNAME ALREADY EXISTS", "error");
-        echo "<script>alert('email already registered')</script>";
     } else {
-        // $conn->query("INSERT INTO users (username, password) VALUES ('$username', '$password')") or die($conn->error);
-        $insertStmt->execute();
-        echo header("Location: login.php");
-        // notify_user("USERNAME AND PASSWORD ADDED", "success");
+        // $user = $conn->query("SELECT * FROM users WHERE username='$username'") or die($conn->error);
+        $selectStmt->execute();
+        $result = $selectStmt->get_result();
+
+        if ($result->fetch_array(MYSQLI_NUM)) {
+            // notify_user("USERNAME ALREADY EXISTS", "error");
+            echo "<script>alert('email already registered')</script>";
+        } else {
+            // $conn->query("INSERT INTO users (username, password) VALUES ('$username', '$password')") or die($conn->error);
+            $insertStmt->execute();
+            echo header("Location: login.php");
+            // notify_user("USERNAME AND PASSWORD ADDED", "success");
+        }
     }
 }
 ?>

@@ -7,6 +7,9 @@ function get_session_user(): mixed {
     return $username;
 }
 
-function rm_session_user() {
-    
+// redirect user to home if already authN and prevent them from accessing this page
+function verify_session_user() {
+    if (isset($_SESSION['sessionUser'])) {
+        echo header("Location: home.php");
+    }
 }
