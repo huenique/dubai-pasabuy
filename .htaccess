@@ -2,11 +2,11 @@ RewriteEngine On
 
 # URL path overwrites
 RewriteRule ^admin/?$ /dubai-pasabuy/public/admin.php [QSA,NC,L]
-RewriteRule ^cart/?$ /dubai-pasabuy/public/cart.php [L]
-RewriteRule ^home/?$ /dubai-pasabuy/public/home.php [L]
-RewriteRule ^landing/?$ /dubai-pasabuy/public/landing.php [L]
-RewriteRule ^login/?$ /dubai-pasabuy/public/login.php [L]
-RewriteRule ^register/?$ /dubai-pasabuy/public/register.php [L]
+RewriteRule ^cart/?$ /dubai-pasabuy/public/cart.php [QSA,NC,L]
+RewriteRule ^home/?$ /dubai-pasabuy/public/home.php [QSA,NC,L]
+RewriteRule ^landing/?$ /dubai-pasabuy/public/landing.php [QSA,NC,L]
+RewriteRule ^login/?$ /dubai-pasabuy/public/login.php [QSA,NC,L]
+RewriteRule ^register/?$ /dubai-pasabuy/public/register.php [QSA,NC,L]
 
 # Exclude the .php extension from URL paths.
 RewriteCond %{THE_REQUEST} /([^.]+)\.php [NC]
