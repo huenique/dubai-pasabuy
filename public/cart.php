@@ -13,8 +13,9 @@ $selectStmt = $conn->prepare("SELECT cart FROM users WHERE username=?");
 function _json_to_assoc(mysqli_stmt $stmt, string $username) {
     $stmt->bind_param("s", $username);
     $stmt->execute();
-    $results = $stmt->get_result();
-    return json_decode($results->fetch_assoc()["cart"], true);
+    $results = $stmt->get_result()->fetch_assoc();
+    if ($results)
+        return json_decode($results["cart"], true);
 }
 
 // display items in cart
