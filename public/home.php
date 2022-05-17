@@ -38,7 +38,7 @@ function add_to_cart(mysqli $conn, string $username, string $itemId) {
 /*
 Load store items.
 
-NOTE: Ideally, this should be executed on page load.
+NOTE: This should be called on page load for SPA effects.
 */
 function display_items(mysqli $conn, string $table): void {
     $items = $conn->query("SELECT * FROM $table");

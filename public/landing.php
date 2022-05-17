@@ -43,7 +43,6 @@ require_once "header.php";
   </div>
 </main>
 </div>
-<!-- JavaScript Files -->
 
 <script src="https://kit.fontawesome.com/a81368914c.js"></script>
 <script src="./app.js"></script>

@@ -78,10 +78,9 @@ if (isset($_POST["signup"])) {
 
     $username = $_POST["username"];
     $password = $_POST["password"];
-    $confirmPassword = $_POST["confirmPassword"];
 
     // ensure users recognize their password
-    if ($password !== $confirmPassword) {
+    if ($password !== $_POST["confirmPassword"]) {
         $_SESSION["registerUsername"] = $username;
         echo header("Location: register.php");
     } else {
