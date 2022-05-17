@@ -11,7 +11,7 @@ if (isset($_SESSION['sessionUser'])) {
 
 $pwNotMatch = <<<PW_MISMATCH
 <label for="validationServerPw" class="form-label mt-2">
-  Confirm Password:
+    Confirm Password:
 </label>
 <div class="input-group has-validation">
     <input
