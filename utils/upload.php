@@ -21,7 +21,7 @@ function upload_image(string $filepath): string
 
     $fileSize = filesize($filepath);
 
-    // We don't want to allow users to upload empty files
+    // We don't want to allow customers to upload empty files
     if (!$fileSize) {
         throw new Exception("The file is empty.");
     }

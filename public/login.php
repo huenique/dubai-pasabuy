@@ -10,7 +10,7 @@ if (isset($_GET["login"])) {
     $password = $_GET["password"];
 
     $conn = get_db_connection();
-    $user = $conn->query("SELECT * FROM users WHERE username='$username'") or die($conn->error);
+    $user = $conn->query("SELECT * FROM customers WHERE username='$username'") or die($conn->error);
     $usercred = $user->fetch_assoc();
 
     if ($usercred) {

@@ -24,10 +24,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `items`
+-- Table structure for table `products`
 --
 
-CREATE TABLE `items` (
+CREATE TABLE `products` (
   `id` varchar(7) NOT NULL,
   `name` varchar(128) NOT NULL,
   `cost_aed` varchar(256) DEFAULT NULL,
@@ -36,20 +36,20 @@ CREATE TABLE `items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `items`
+-- Dumping data for table `products`
 --
 
-INSERT INTO `items` (`id`, `name`, `cost_aed`, `cost_php`, `access`) VALUES
+INSERT INTO `products` (`id`, `name`, `cost_aed`, `cost_php`, `access`) VALUES
 ('175c206', 'Perfume', NULL, NULL, 'onhand'),
 ('30da5bd', 'Cologne', NULL, NULL, 'next');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Table structure for table `customers`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE `customers` (
   `id` int(11) NOT NULL,
   `username` varchar(320) NOT NULL,
   `password` varchar(256) NOT NULL,
@@ -57,10 +57,10 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `users`
+-- Dumping data for table `customers`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `cart`) VALUES
+INSERT INTO `customers` (`id`, `username`, `password`, `cart`) VALUES
 (20, 'test@gg.com', '123', NULL);
 
 --
@@ -68,15 +68,15 @@ INSERT INTO `users` (`id`, `username`, `password`, `cart`) VALUES
 --
 
 --
--- Indexes for table `items`
+-- Indexes for table `products`
 --
-ALTER TABLE `items`
+ALTER TABLE `products`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
+-- Indexes for table `customers`
 --
-ALTER TABLE `users`
+ALTER TABLE `customers`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -84,9 +84,9 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT for table `customers`
 --
-ALTER TABLE `users`
+ALTER TABLE `customers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 COMMIT;
 

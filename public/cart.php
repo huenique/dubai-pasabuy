@@ -7,7 +7,7 @@ require_once __DIR__ . "/../utils/session.php";
 $username = get_session_user();
 
 // prepared stmts
-$selectStmt = $conn->prepare("SELECT cart FROM users WHERE username=?");
+$selectStmt = $conn->prepare("SELECT cart FROM customers WHERE username=?");
 
 // helper func to conver sql json to associative arr
 function _json_to_assoc(mysqli_stmt $stmt, string $username) {
@@ -17,40 +17,36 @@ function _json_to_assoc(mysqli_stmt $stmt, string $username) {
     if ($results) return json_decode($results["cart"], true);
 }
 
-// display items in cart
-function display_cart_items(mysqli $conn, string $username, mysqli_stmt $stmt) {
+// display products in cart
+function display_cart_products(mysqli $conn, string $username, mysqli_stmt $stmt) {
     $cartDec = _json_to_assoc($stmt, $username);
 
     if ($cartDec) {
-        foreach ($cartDec as $itemId => $value) {
-            $item = $conn->query("SELECT `name` FROM current_items WHERE id='$itemId'");
+        foreach ($cartDec as $productId => $value) {
+            $product = $conn->query("SELECT `name` FROM products WHERE id='$productId'");
     
-            if ($item->num_rows == 0) {
-                $item = $conn->query("SELECT `name` FROM next_items WHERE id='$itemId'");
-            }
-    
-            $itemName = $item->fetch_assoc()["name"];
+            $productName = $product->fetch_assoc()["name"];
             echo <<<CART_ITEMS
             <div class="d-flex">
                 <div class="card item-card me-5">
-                    <img src="static/img/item.png" class="img-thumbnail" alt="..." />
+                    <img src="static/img/product.png" class="img-thumbnail" alt="..." />
                 </div>
                 <div class="d-flex flex-column">
-                    <p>$itemName</p>
+                    <p>$productName</p>
                     <div class="d-flex flex-row">
                         <div class="btn-container">
-                            <button class="btn decrease$itemId"><i data-feather="minus"></i></button>
-                            <span id="value$itemId">{$cartDec[$itemId]}</span>
-                            <button class="btn increase$itemId"><i data-feather="plus"></i></button>
+                            <button class="btn decrease$productId"><i data-feather="minus"></i></button>
+                            <span id="value$productId">{$cartDec[$productId]}</span>
+                            <button class="btn increase$productId"><i data-feather="plus"></i></button>
                         </div>
                         <form method="post">
                             <input
-                                id="input-value$itemId"
+                                id="input-value$productId"
                                 style="display: none"
                                 value="$value"
-                                name="itemQuantity"
+                                name="productQuantity"
                             />
-                            <input style="display: none" value="$itemId" name="itemId"/>
+                            <input style="display: none" value="$productId" name="productId"/>
                             <button type="submit" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Save amount">
                                 <i data-feather="check"></i>
                             </button>
@@ -60,33 +56,33 @@ function display_cart_items(mysqli $conn, string $username, mysqli_stmt $stmt) {
             </div>
     
             <script>
-            const value$itemId = document.querySelector("#value$itemId");
-            const btn$itemId = document.querySelectorAll(".btn");
-            let count$itemId = value$itemId.textContent;
+            const value$productId = document.querySelector("#value$productId");
+            const btn$productId = document.querySelectorAll(".btn");
+            let count$productId = value$productId.textContent;
             
-            btn$itemId.forEach(function (btn$itemId) {
-                btn$itemId.addEventListener("click", function (e) {
+            btn$productId.forEach(function (btn$productId) {
+                btn$productId.addEventListener("click", function (e) {
                     const styles = e.currentTarget.classList;
             
-                    if (styles.contains("decrease$itemId")) {
-                        if (count$itemId > 0) {
-                            count$itemId--;
+                    if (styles.contains("decrease$productId")) {
+                        if (count$productId > 0) {
+                            count$productId--;
                         }
-                    } else if (styles.contains("increase$itemId")) {
-                        count$itemId++;
+                    } else if (styles.contains("increase$productId")) {
+                        count$productId++;
                     }
             
-                    if (count$itemId > 0) {
-                        value$itemId.style.color = "green";
+                    if (count$productId > 0) {
+                        value$productId.style.color = "green";
                     }
-                    // if (count$itemId < 0) {
-                    //     value$itemId.style.color = "red";
+                    // if (count$productId < 0) {
+                    //     value$productId.style.color = "red";
                     // }
-                    if (count$itemId === 0) {
-                        value$itemId.style.color = "#222";
+                    if (count$productId === 0) {
+                        value$productId.style.color = "#222";
                     }
-                    value$itemId.textContent = count$itemId;
-                    document.getElementById("input-value$itemId").value = count$itemId;
+                    value$productId.textContent = count$productId;
+                    document.getElementById("input-value$productId").value = count$productId;
               });
             });
             </script>
@@ -96,11 +92,11 @@ function display_cart_items(mysqli $conn, string $username, mysqli_stmt $stmt) {
 }
 
 // slider: quantity 
-function set_item_quantity(mysqli $conn, string $username, string $itemId, string $quantity, mysqli_stmt $stmt) {
+function set_product_quantity(mysqli $conn, string $username, string $productId, string $quantity, mysqli_stmt $stmt) {
     $cartDec = _json_to_assoc($stmt, $username);
-    $cartDec[$itemId] = $quantity;
+    $cartDec[$productId] = $quantity;
     $cart = json_encode($cartDec);
-    $updateStmt = $conn->prepare("UPDATE users SET cart=? WHERE username=?");
+    $updateStmt = $conn->prepare("UPDATE customers SET cart=? WHERE username=?");
     $updateStmt->bind_param("ss", $cart, $username);
     $updateStmt->execute();
     echo "<script>alert('cart updated')</script>";
@@ -113,8 +109,8 @@ function checkout() {}
 function remove_from_cart() {}
 
 // map to allow different html page interactions to call php functions.
-if (array_key_exists("itemQuantity", $_POST)) {
-    set_item_quantity($conn, $username, $_POST["itemId"], $_POST["itemQuantity"], $selectStmt);
+if (array_key_exists("productQuantity", $_POST)) {
+    set_product_quantity($conn, $username, $_POST["productId"], $_POST["productQuantity"], $selectStmt);
 }
 
 ?>
@@ -123,7 +119,7 @@ if (array_key_exists("itemQuantity", $_POST)) {
     <h1>My Cart</h1>
     <div class="d-flex flex-column justify-content-center">
         <?php
-        display_cart_items($conn, $username, $selectStmt);
+        display_cart_products($conn, $username, $selectStmt);
         ?>
     </div>
 </div>

@@ -71,20 +71,20 @@ $registerPage = <<<REGISTER
 REGISTER;
 
 if (isset($_POST["signup"])) {
-    $insertStmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-    $selectStmt = $conn->prepare("SELECT * FROM users WHERE username=?");
+    $insertStmt = $conn->prepare("INSERT INTO customers (username, password) VALUES (?, ?)");
+    $selectStmt = $conn->prepare("SELECT * FROM customers WHERE username=?");
     $insertStmt->bind_param("ss", $username, $password);
     $selectStmt->bind_param("s", $username);
 
     $username = $_POST["username"];
     $password = $_POST["password"];
 
-    // ensure users recognize their password
+    // ensure customers recognize their password
     if ($password !== $_POST["confirmPassword"]) {
         $_SESSION["registerUsername"] = $username;
         echo header("Location: register.php");
     } else {
-        // $user = $conn->query("SELECT * FROM users WHERE username='$username'") or die($conn->error);
+        // $user = $conn->query("SELECT * FROM customers WHERE username='$username'") or die($conn->error);
         $selectStmt->execute();
         $result = $selectStmt->get_result();
 
@@ -92,7 +92,7 @@ if (isset($_POST["signup"])) {
             // notify_user("USERNAME ALREADY EXISTS", "error");
             echo "<script>alert('email already registered')</script>";
         } else {
-            // $conn->query("INSERT INTO users (username, password) VALUES ('$username', '$password')") or die($conn->error);
+            // $conn->query("INSERT INTO customers (username, password) VALUES ('$username', '$password')") or die($conn->error);
             $insertStmt->execute();
             echo header("Location: login.php");
             // notify_user("USERNAME AND PASSWORD ADDED", "success");
