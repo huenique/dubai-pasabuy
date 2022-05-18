@@ -40,9 +40,8 @@ Load store items.
 
 NOTE: This should be called on page load for SPA effects.
 */
-function display_items(mysqli $conn, string $table): void {
-    $items = $conn->query("SELECT * FROM $table");
-    foreach ($items->fetch_all(MYSQLI_ASSOC) as $row) {
+function display_items(mysqli_result $result): void {
+    foreach ($result->fetch_all(MYSQLI_ASSOC) as $row) {
         echo <<<ITEM
         <div class="card item-card">
             <img src="./static/img/item.png" class="card-img-top" alt="..." />
@@ -58,8 +57,16 @@ function display_items(mysqli $conn, string $table): void {
         </form>
         ITEM;
     }
-    $items->free_result();
+    $result->free_result();
 };
+
+function display_onhand(mysqli $conn) {
+    display_items($conn->query("SELECT * FROM items WHERE access='onhand'"));
+}
+
+function display_nextbatch(mysqli $conn) {
+    display_items($conn->query("SELECT * FROM items WHERE access='next'"));
+}
 ?>
 <title>Dubai Pasabuy</title>
 <?php display_navbar() ?>
@@ -75,8 +82,8 @@ function display_items(mysqli $conn, string $table): void {
     <!-- /tools for navigating the dashboard -->
 
     <!-- on hand or next batch -->
-    <section id="current-items" class="hidden-section"><?php display_items($conn, "current_items") ?></section>
-    <section id="next-items" class="hidden-section"><?php display_items($conn, "next_items") ?></section>
+    <section id="current-items" class="hidden-section"><?php display_onhand($conn) ?></section>
+    <section id="next-items" class="hidden-section"><?php display_nextbatch($conn) ?></section>
     <!-- /on hand or next batch -->
 </div>
 

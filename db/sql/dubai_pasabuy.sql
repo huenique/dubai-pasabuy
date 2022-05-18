@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 18, 2022 at 08:10 AM
+-- Generation Time: May 18, 2022 at 09:42 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.2
 
@@ -24,42 +24,24 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `current_items`
+-- Table structure for table `items`
 --
 
-CREATE TABLE `current_items` (
+CREATE TABLE `items` (
   `id` varchar(7) NOT NULL,
   `name` varchar(128) NOT NULL,
   `cost_aed` varchar(256) DEFAULT NULL,
-  `cost_php` varchar(256) DEFAULT NULL
+  `cost_php` varchar(256) DEFAULT NULL,
+  `access` tinytext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `current_items`
+-- Dumping data for table `items`
 --
 
-INSERT INTO `current_items` (`id`, `name`, `cost_aed`, `cost_php`) VALUES
-('175c206', 'Perfume', NULL, NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `next_items`
---
-
-CREATE TABLE `next_items` (
-  `id` varchar(7) NOT NULL,
-  `name` varchar(128) NOT NULL,
-  `cost_aed` varchar(256) DEFAULT NULL,
-  `cost_php` varchar(256) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `next_items`
---
-
-INSERT INTO `next_items` (`id`, `name`, `cost_aed`, `cost_php`) VALUES
-('30da5bd', 'Cologne', NULL, NULL);
+INSERT INTO `items` (`id`, `name`, `cost_aed`, `cost_php`, `access`) VALUES
+('175c206', 'Perfume', NULL, NULL, 'onhand'),
+('30da5bd', 'Cologne', NULL, NULL, 'next');
 
 -- --------------------------------------------------------
 
@@ -75,19 +57,20 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `username`, `password`, `cart`) VALUES
+(20, 'test@gg.com', '123', NULL);
+
+--
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `current_items`
+-- Indexes for table `items`
 --
-ALTER TABLE `current_items`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `next_items`
---
-ALTER TABLE `next_items`
+ALTER TABLE `items`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -104,7 +87,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
