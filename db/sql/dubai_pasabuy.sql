@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 17, 2022 at 04:07 PM
+-- Generation Time: May 18, 2022 at 08:10 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.2
 
@@ -29,15 +29,17 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `current_items` (
   `id` varchar(7) NOT NULL,
-  `name` varchar(128) DEFAULT NULL
+  `name` varchar(128) NOT NULL,
+  `cost_aed` varchar(256) DEFAULT NULL,
+  `cost_php` varchar(256) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `current_items`
 --
 
-INSERT INTO `current_items` (`id`, `name`) VALUES
-('175c206', 'Perfume');
+INSERT INTO `current_items` (`id`, `name`, `cost_aed`, `cost_php`) VALUES
+('175c206', 'Perfume', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -47,15 +49,17 @@ INSERT INTO `current_items` (`id`, `name`) VALUES
 
 CREATE TABLE `next_items` (
   `id` varchar(7) NOT NULL,
-  `name` varchar(128) DEFAULT NULL
+  `name` varchar(128) NOT NULL,
+  `cost_aed` varchar(256) DEFAULT NULL,
+  `cost_php` varchar(256) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `next_items`
 --
 
-INSERT INTO `next_items` (`id`, `name`) VALUES
-('30da5bd', 'Cologne');
+INSERT INTO `next_items` (`id`, `name`, `cost_aed`, `cost_php`) VALUES
+('30da5bd', 'Cologne', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -100,7 +104,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
