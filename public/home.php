@@ -6,8 +6,6 @@ require_once __DIR__ . "/../utils/session.php";
 
 $user = get_session_user();
 
-echo $user . "<--display besides dashboard profile picture?";
-
 // map to allow different html page interactions to call php functions.
 if (array_key_exists("addToCart", $_POST)) {
     add_to_cart($conn, $user, $_POST["productId"]);
