@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 18, 2022 at 04:34 PM
+-- Generation Time: May 18, 2022 at 05:46 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.2
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `dubai_pasabuy`
+-- Database: `database_table_name`
 --
 
 -- --------------------------------------------------------
@@ -39,7 +39,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `username`, `password`, `cart`) VALUES
-(20, 'test@gg.com', '123', '{\"30\":\"5\",\"175\":\"3\"}');
+(20, 'test@gg.com', '123', '{\"30\":\"7\",\"175\":\"3\"}');
 
 -- --------------------------------------------------------
 
@@ -53,7 +53,9 @@ CREATE TABLE `orders` (
   `item` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `pasabuy_fee` decimal(15,2) NOT NULL,
   `total_value` decimal(15,2) NOT NULL,
-  `total_collection` decimal(15,2) NOT NULL
+  `total_collection` decimal(15,2) NOT NULL,
+  `delivered` tinyint(1) NOT NULL DEFAULT 0,
+  `paid` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
