@@ -1,10 +1,10 @@
 <?php
+
 require_once "header.php";
 require_once __DIR__ . "/../db/connection.php";
 require_once __DIR__ . "/../utils/session.php";
 
-session_start();
-verify_session_user();
+$_ = get_session_user();
 
 $pwNotMatch = <<<PW_MISMATCH
 <label for="validationServerPw" class="form-label mt-2">
@@ -84,18 +84,18 @@ if (isset($_POST["signup"])) {
         $_SESSION["registerUsername"] = $username;
         echo header("Location: register.php");
     } else {
-        // $user = $conn->query("SELECT * FROM customers WHERE username='$username'") or die($conn->error);
+        // prevent unexpected behaviors caused by session variables created or modified outside login.php
+        session_unset();
+        session_destroy();
+
         $selectStmt->execute();
         $result = $selectStmt->get_result();
 
         if ($result->fetch_array(MYSQLI_NUM)) {
-            // notify_user("USERNAME ALREADY EXISTS", "error");
             echo "<script>alert('email already registered')</script>";
         } else {
-            // $conn->query("INSERT INTO customers (username, password) VALUES ('$username', '$password')") or die($conn->error);
             $insertStmt->execute();
             echo header("Location: login.php");
-            // notify_user("USERNAME AND PASSWORD ADDED", "success");
         }
     }
 }

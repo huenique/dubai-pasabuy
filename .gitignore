@@ -1,7 +1,15 @@
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
 
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,linux
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,linux
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,linux,composer
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,linux,composer
+
+### Composer ###
+composer.phar
+/vendor/
+
+# Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
+# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
+# composer.lock
 
 ### Linux ###
 *~
@@ -19,7 +27,7 @@
 .nfs*
 
 ### VisualStudioCode ###
-.vscode
+.vscode/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -44,7 +52,7 @@
 # Ignore code-workspaces
 *.code-workspace
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,linux
+# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,linux,composer
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 

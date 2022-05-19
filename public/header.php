@@ -10,6 +10,5 @@
 <body>
     <script src="./static/bootstrap.bundle.min.js" rel="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-
 </body>
 </html>

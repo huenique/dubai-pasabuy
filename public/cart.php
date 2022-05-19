@@ -1,4 +1,5 @@
 <?php
+
 require_once "header.php";
 require_once "navbar.php";
 require_once __DIR__ . "/../db/connection.php";
@@ -9,7 +10,7 @@ $username = get_session_user();
 // prepared stmts
 $selectStmt = $conn->prepare("SELECT cart FROM customers WHERE username=?");
 
-// helper func to conver sql json to associative arr
+/** Private helper func to conver sql json to associative arr. */
 function _json_to_assoc(mysqli_stmt $stmt, string $username) {
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -17,7 +18,7 @@ function _json_to_assoc(mysqli_stmt $stmt, string $username) {
     if ($results) return json_decode($results["cart"], true);
 }
 
-// display products in cart
+/** Display user added products to cart. */
 function display_cart_products(mysqli $conn, string $username, mysqli_stmt $stmt) {
     $cartDec = _json_to_assoc($stmt, $username);
 
@@ -91,7 +92,7 @@ function display_cart_products(mysqli $conn, string $username, mysqli_stmt $stmt
     }
 }
 
-// slider: quantity 
+/** Update the cart item quantity. */
 function set_product_quantity(mysqli $conn, string $username, string $productId, string $quantity, mysqli_stmt $stmt) {
     $cartDec = _json_to_assoc($stmt, $username);
     $cartDec[$productId] = $quantity;
@@ -102,10 +103,7 @@ function set_product_quantity(mysqli $conn, string $username, string $productId,
     echo "<script>alert('cart updated')</script>";
 }
 
-// checkout -> record to database
-function checkout() {}
-
-// remove -> delete from db
+/** Remove specified item from cart. */
 function remove_from_cart() {}
 
 // map to allow different html page interactions to call php functions.
@@ -114,6 +112,7 @@ if (array_key_exists("productQuantity", $_POST)) {
 }
 
 ?>
+<title>My Cart</title>
 <?php display_navbar() ?>
 <div class="container">
     <h1>My Cart</h1>
@@ -122,6 +121,10 @@ if (array_key_exists("productQuantity", $_POST)) {
         display_cart_products($conn, $username, $selectStmt);
         ?>
     </div>
+    <form action="checkout.php" method="get">
+        <input style="display: none;" name="checkout"></input>
+        <button type="submit" class="btn btn-info btn-lg" style="margin-top: 10%">Checkout</button>
+    </form>
 </div>
 
 <script>

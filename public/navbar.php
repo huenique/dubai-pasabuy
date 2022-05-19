@@ -6,6 +6,7 @@ if (isset($_GET["logoutUser"])) {
     session_destroy();
 }
 
+/** Navbar component */
 function display_navbar() {
     echo <<<NAVBAR
     <style>

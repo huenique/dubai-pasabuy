@@ -1,9 +1,10 @@
 <?php
+
 require_once "header.php";
 require_once __DIR__ . "/../db/connection.php";
 require_once __DIR__ . "/../utils/session.php";
 
-session_start();
+$_ = get_session_user();
 
 if (isset($_GET["login"])) {
     $username = $_GET["username"];
@@ -20,12 +21,6 @@ if (isset($_GET["login"])) {
         }
     } else {}
     echo "<script>alert('incorrect email or password!')</script>";
-} else {
-    verify_session_user();
-
-    // prevent unexpected behaviors caused by session variables created or modified outside login.php
-    session_unset();
-    session_destroy();
 }
 ?>
 <title>Login</title>

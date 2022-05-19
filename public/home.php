@@ -1,4 +1,5 @@
 <?php
+
 require_once "header.php";
 require_once "navbar.php";
 require_once __DIR__ . "/../db/connection.php";
@@ -11,8 +12,8 @@ if (array_key_exists("addToCart", $_POST)) {
     add_to_cart($conn, $user, $_POST["productId"]);
 }
 
-/*
-Utilities for making transactions with the database.
+/**
+* Utilities for making transactions with the database.
 */
 function add_to_cart(mysqli $conn, string $username, string $productId) {
     $cartResult = $conn->query("SELECT cart FROM customers WHERE username='$username'");
@@ -33,10 +34,9 @@ function add_to_cart(mysqli $conn, string $username, string $productId) {
     }
 }
 
-/*
-Load store products.
-
-NOTE: This should be called on page load for SPA effects.
+/**
+* Load store products.
+* NOTE: This should be called on page load for SPA effects.
 */
 function display_products(mysqli_result $result): void {
     foreach ($result->fetch_all(MYSQLI_ASSOC) as $row) {

@@ -10,8 +10,8 @@ function get_db_connection() {
     // Replace the values as needed
 
     // $cleardb_server = "127.0.0.1";
-    // $cleardb_username = "username";
-    // $cleardb_password = "password";
+    // $cleardb_username = "root";
+    // $cleardb_password = "";
     // $cleardb_db = "database_table_name";
 
     $conn = new mysqli($cleardb_server, $cleardb_username, $cleardb_password, $cleardb_db);
