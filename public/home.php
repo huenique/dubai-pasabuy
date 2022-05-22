@@ -13,14 +13,18 @@ if (array_key_exists("addToCart", $_POST)) {
 }
 
 /**
-* Utilities for making transactions with the database.
-*/
-function add_to_cart(mysqli $conn, string $username, string $productId) {
+ * Utilities for making transactions with the database.
+ */
+function add_to_cart(mysqli $conn, string $username, string $productId)
+{
     $cartResult = $conn->query("SELECT cart FROM customers WHERE username='$username'");
+
+    // The cart items are stored as a JSON object, hence the need to parse the query result.
     $cartDec = json_decode($cartResult->fetch_assoc()["cart"], true);
 
-    if (!$cartDec)
+    if (!$cartDec) {
         $cartDec = array();
+    }
 
     if (array_key_exists($productId, $cartDec)) {
         echo "<script>alert('product already added to cart')</script>";
@@ -35,10 +39,11 @@ function add_to_cart(mysqli $conn, string $username, string $productId) {
 }
 
 /**
-* Load store products.
-* NOTE: This should be called on page load for SPA effects.
-*/
-function display_products(mysqli_result $result): void {
+ * Load store products.
+ * NOTE: This should be called on page load for SPA effects.
+ */
+function display_store_products(mysqli_result $result): void
+{
     foreach ($result->fetch_all(MYSQLI_ASSOC) as $row) {
         echo <<<ITEM
         <div class="card item-card">
@@ -48,7 +53,7 @@ function display_products(mysqli_result $result): void {
             </div>
         </div>
         <form method="post">
-            <input style="display: none" value="{$row["id"]}" name="productId">
+            <input class="input-default" value="{$row["id"]}" name="productId">
             <button type="submit" class="btn btn-warning" name="addToCart">
                 ADD TO CART<i data-feather="shopping-cart"></i>
             </button>
@@ -58,50 +63,54 @@ function display_products(mysqli_result $result): void {
     $result->free_result();
 };
 
-function display_onhand(mysqli $conn) {
-    display_products($conn->query("SELECT * FROM products WHERE access='onhand'"));
+function display_onhand(mysqli $conn)
+{
+    display_store_products($conn->query("SELECT * FROM products WHERE access='onhand'"));
 }
 
-function display_nextbatch(mysqli $conn) {
-    display_products($conn->query("SELECT * FROM products WHERE access='next'"));
+function display_nextbatch(mysqli $conn)
+{
+    display_store_products($conn->query("SELECT * FROM products WHERE access='next'"));
 }
 ?>
 <title>Dubai Pasabuy</title>
-<?php display_navbar() ?>
+<?php display_navbar()?>
 <div class="container">
     <h1>Pasabuy Today</h1>
 
     <!-- tools for navigating the dashboard -->
     <div class="btn-group btn-group-lg" role="group" aria-label="menu">
-        <button type="button" class="btn btn-outline-dark" onclick="displayAll()">All</button>
-        <button type="button" class="btn btn-outline-dark" onclick="displayCurrentItems()">on hand</button>
-        <button type="button" class="btn btn-outline-dark" onclick="displayNextItems()">next batch</button>
+        <button class="btn btn-outline-dark" type="button" onclick="displayAll()">All</button>
+        <button class="btn btn-outline-dark" type="button" onclick="displayCurrentItems()">on hand</button>
+        <button class="btn btn-outline-dark" type="button" onclick="displayNextItems()">next batch</button>
     </div>
     <!-- /tools for navigating the dashboard -->
 
     <!-- on hand or next batch -->
-    <section id="current-products" class="hidden-section"><?php display_onhand($conn) ?></section>
-    <section id="next-products" class="hidden-section"><?php display_nextbatch($conn) ?></section>
+    <div class="section-default" id="current-products" ><?php display_onhand($conn)?></div>
+    <div class="section-default" id="next-products"><?php display_nextbatch($conn)?></div>
     <!-- /on hand or next batch -->
 </div>
 
 <script>
-if (!document.getElementById("current-products").style.display) {
-    displayAll();
+function resetDisplay() {
+    let sections = document.querySelectorAll(".section-default");
+    sections.forEach(section => {
+        section.style.display = "none";
+    });
 }
 
 function displayAll() {
-    document.getElementById("next-products").style.display = "none";
-    document.getElementById("current-products").style.display = "none";
+    resetDisplay();
 }
 
 function displayCurrentItems() {
-    document.getElementById("next-products").style.display = "none";
+    resetDisplay();
     document.getElementById("current-products").style.display = "unset";
 }
 
 function displayNextItems() {
-    document.getElementById("current-products").style.display = "none"
+    resetDisplay();
     document.getElementById("next-products").style.display = "unset";
 }
 </script>

@@ -1,11 +1,454 @@
 <?php
 
 require_once "header.php";
-?>
-<title>Dubai Pasabuy – Admin</title>
+require_once __DIR__ . "/../db/connection.php";
 
-<form action="upload.php" method="post" enctype="multipart/form-data">
-  Select image to upload:
-  <input type="file" name="fileToUpload" id="fileToUpload">
-  <input type="submit" value="Upload Image" name="submit">
-</form>
+/**
+ * Create a dynamic table based.
+ * @param \mysqli_result $columns
+ * @param \mysqli_result $rows
+ * @param string $columnWidth
+ * @param string $title
+ * @return void
+ */
+function display_table(
+    mysqli_result $columns,
+    mysqli_result $rows,
+    string $columnWidth = "",
+    string $title = ""
+): void {
+    // Sensitive information should not be shown (e.g. passwords)
+    $exemptedCols = array("password", "cart");
+    $tableColumns = "";
+    $tableRows = "";
+    $smallTitle = strtolower(substr($title, 0, -1));
+
+    // Consider the entire table as a form. We want to somehow link the
+    // checkboxes to the actions button next to the table header
+    echo "<form method='post'>";
+
+    // Create the table headers
+    foreach ($columnNames = $columns->fetch_all(MYSQLI_ASSOC) as $column) {
+        if (!in_array($columnField = $column["Field"], $exemptedCols)) {
+            $columnField = ucwords(str_replace('_', ' ', $columnField));
+            $tableColumns .= "<th  class='$columnWidth' scope='col'>{$columnField}</th>";
+        }
+    }
+
+    $tableColumns .= <<<PARENT_CHECKBOX
+    <th></th>
+    <th>
+        <div class="form-check">
+            <input
+                class="form-check-input $smallTitle"
+                type="checkbox"
+                value=""
+                id="parent-checkbox-$smallTitle"
+            />
+            <label class="form-check-label" for="parent-checkbox-$smallTitle">
+            </label>
+        </div>
+    </th>
+    PARENT_CHECKBOX;
+
+    // Create the table rows
+    foreach ($rows->fetch_all(MYSQLI_ASSOC) as $row) {
+        $tableRows .= "<tr>";
+        foreach ($columnNames as $col) {
+            if (!in_array($colField = $col["Field"], $exemptedCols)) {
+                $tableRows .= "<td class='$columnWidth'>{$row[$colField]}</td>";
+            }
+        }
+
+        // Create the row options. Edit buttons and checkboxes included
+        $checkboxName = $smallTitle . "Select[]";
+        $tableRows .= <<<ROW_OPTIONS
+        <td class="$columnWidth">
+            <i data-feather="edit" class="mx-1 idiom-pointer"></i>
+            <th scope="col">
+                <input
+                    class="form-check-input $smallTitle"
+                    type="checkbox"
+                    name="$checkboxName"
+                    value="{$row["id"]}"
+                    id="{$row["id"]}"
+                />
+                <label for="{$row["id"]}"></label>
+            </th>
+        </td>
+        ROW_OPTIONS;
+        $tableRows .= "</tr>";
+    }
+
+    echo <<<TITLE_AND_ACTIONS
+    <div class="d-flex mb-5">
+        <h3 class="flex-grow-1" id='section-title'>$title</h3>
+        <div class="dropdown">
+            <button
+                class="btn btn-secondary dropdown-toggle"
+                type="button" id="dropdownMenuButton1"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Actions
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                <li>
+                    <button class="dropdown-item" type="submit" name="delete-selected">
+                        <i class="feather-default" data-feather="trash"></i>Delete selected
+                    </button>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#">
+                        <i class="feather-default" data-feather="plus-circle"></i> Insert new {$smallTitle}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    TITLE_AND_ACTIONS;
+
+    echo "<div class='table-responsive'>";
+    echo "<table class='table align-middle'>";
+    echo "<thead>$tableColumns</thead>";
+    echo "<tbody>";
+    echo $tableRows;
+    echo "</tbody></table></div>";
+
+    echo <<<SCRIPTS
+    <script>
+        let parentCheckbox$smallTitle = document.getElementById("parent-checkbox-$smallTitle");
+        parentCheckbox$smallTitle.addEventListener("change", e => {
+            document.querySelectorAll("tbody .$smallTitle").forEach(checkbox => {
+                checkbox.checked = e.target.checked
+            })
+        });
+
+        document.querySelectorAll("tbody .$smallTitle").forEach(checkbox => {
+            checkbox.addEventListener("change", ()=> {
+                let tbodyCheckbox = document.querySelectorAll("tbody .$smallTitle").length;
+                let tbodyCheckedbox = document.querySelectorAll("tbody .$smallTitle:checked").length;
+
+                if(tbodyCheckbox == tbodyCheckedbox){
+                    parentCheckbox$smallTitle.indeterminate = false;
+                    parentCheckbox$smallTitle.checked = true;
+                }
+
+                if (tbodyCheckbox > tbodyCheckedbox && tbodyCheckedbox>=1) {
+                    parentCheckbox$smallTitle.indeterminate = true;
+                }
+
+                if(tbodyCheckedbox==0) {
+                    parentCheckbox$smallTitle.indeterminate = false;
+                    parentCheckbox$smallTitle.checked = false;
+                }
+
+            })
+        })
+    </script>
+    SCRIPTS;
+
+    // End of table/form
+    echo "</form>";
+
+    $columns->free_result();
+    $rows->free_result();
+};
+
+/**
+ * Display the orders table from the database.
+ * NOTE: Call this on page load to prevent page loads.
+ */
+function display_orders(mysqli $conn)
+{
+    display_table(
+        $conn->query("DESCRIBE orders"),
+        $conn->query("SELECT * FROM orders"),
+        "",
+        "Orders"
+    );
+}
+
+/**
+ * Display the products table from the database.
+ * NOTE: Call this on page load to prevent page loads.
+ */
+function display_products(mysqli $conn)
+{
+    display_table(
+        $conn->query("DESCRIBE products"),
+        $conn->query("SELECT * FROM products"),
+        "",
+        "Products"
+    );
+}
+
+/**
+ * Display the customers table from the database.
+ * NOTE: Call this on page load to prevent page loads.
+ */
+function display_customers(mysqli $conn)
+{
+    display_table(
+        $conn->query("DESCRIBE customers"),
+        $conn->query("SELECT * FROM customers"),
+        "",
+        "Customers"
+    );
+}
+
+session_start();
+
+$path = preg_replace("~.*/~", "", $_SERVER['REQUEST_URI']);
+
+// Set the session admin
+// TODO: impl proper authentication
+if (isset($_POST["adminUser"])) {
+    $_SESSION["sessionAdmin"] = $_POST["adminPassw"];
+}
+
+// Delete the selected rows from the db
+if (isset($_POST["delete-selected"])) {
+    if (isset($_POST["customerSelect"])) {
+        foreach ($_POST["customerSelect"] as $id) {
+            mysqli_query($conn, "DELETE FROM customers WHERE id='$id'");
+        }
+    } elseif (isset($_POST["productSelect"])) {
+        foreach ($_POST["productSelect"] as $id) {
+            mysqli_query($conn, "DELETE FROM products WHERE id='$id'");
+        }
+    } elseif (isset($_POST["orderSelect"])) {
+        foreach ($_POST["orderSelect"] as $id) {
+            mysqli_query($conn, "DELETE FROM orders WHERE id='$id'");
+        }
+    }
+}
+?>
+<title>Dashboard</title>
+<style>
+    .feather-default {
+        width: 16px;
+        height: 16px;
+        margin-bottom: 2%;
+        margin-right: 4%;
+    }
+</style>
+
+<?php if ($path === "admin" && isset($_SESSION["sessionAdmin"])) {?>
+<body data-new-gr-c-s-check-loaded="14.1016.0" data-gr-ext-installed="">
+
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Dubai Pasabuy</a>
+  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+  <div class="navbar-nav">
+    <div class="nav-item text-nowrap">
+      <a class="nav-link px-3" href="#">Sign out</a>
+    </div>
+  </div>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item" onclick="showSummary()">
+                        <a class="nav-link active" aria-current="page" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home" aria-hidden="true">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item" onclick="showOrders()">
+                        <a class="nav-link" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file" aria-hidden="true">
+                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                <polyline points="13 2 13 9 20 9"></polyline>
+                            </svg>
+                            Orders
+                        </a>
+                    </li>
+                    <li class="nav-item" onclick="showProducts()">
+                        <a class="nav-link" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart" aria-hidden="true">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            Products
+                        </a>
+                    </li>
+                    <li class="nav-item" onclick="showCustomers()">
+                        <a class="nav-link" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users" aria-hidden="true">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            Customers
+                        </a>
+                    </li>
+                    <li class="nav-item" onclick="alert('not yet implemented')">
+                        <a class="nav-link" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2" aria-hidden="true">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            Reports
+                        </a>
+                    </li>
+                </ul>
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Saved reports</span>
+                    <a class="link-secondary" href="#" aria-label="Add a new report">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="16"></line>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                    </a>
+                </h6>
+                <ul class="nav flex-column mb-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text" aria-hidden="true">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg> Current month </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text" aria-hidden="true">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg> Last quarter </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text" aria-hidden="true">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg> Social engagement </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text" aria-hidden="true">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg> Year-end sale </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 vh-100">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                    </div>
+                </div>
+            </div>
+            <div class="section-default" id="summary-section"></div>
+            <div class="section-default" id="orders-section"><?php display_orders($conn);?></div>
+            <div class="section-default" id="products-section"><?php display_products($conn);?></div>
+            <div class="section-default" id="customers-section"><?php display_customers($conn);?></div>
+        </main>
+    </div>
+
+    <!-- Modal for editing table rows -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="update-row-modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="update-row-modal">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal for editing table rows -->
+</div>
+
+<!-- AuthN user -->
+<?php } else {?>
+<div class="container">
+    <div class="card">
+        <div class="m-2">
+            <form method="post">
+                <div class="mb-3">
+                    <label for="admin-username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="admin-username" name="adminUser">
+                </div>
+                <div class="mb-3">
+                    <label for="admin-password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="admin-password" name="adminPassw">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        <div>
+    </div>
+</div>
+<?php }?>
+<!-- /AuthN user -->
+
+<script>
+    feather.replace()
+</script>
+<script>
+    // Helpers for page navigation.
+
+    function resetDisplay() {
+        let sections = document.querySelectorAll(".section-default");
+        sections.forEach(section => {
+            section.style.display = "none";
+        });
+
+        // Uncheck all checkboxes
+        document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+    }
+
+    function showOrders() {
+        resetDisplay();
+        document.getElementById("orders-section").style.display = "unset";
+    }
+
+    function showProducts() {
+        resetDisplay();
+        document.getElementById("products-section").style.display = "unset";
+    }
+
+    function showCustomers() {
+        resetDisplay();
+        document.getElementById("customers-section").style.display = "unset";
+    }
+
+    function showSummary() {
+
+    }
+</script>

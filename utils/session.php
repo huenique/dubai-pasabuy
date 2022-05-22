@@ -9,12 +9,12 @@ function get_session_user() {
 
     $path = preg_replace("~.*/~", "", $_SERVER['REQUEST_URI']);
 
-    if (($path === "login" || $path === "register") && isset($_SESSION['sessionUser'])) {
+    if (($path === "login" || $path === "register") && isset($_SESSION["sessionUser"])) {
         echo header("Location: home.php");
         return null;
     }
 
-    if (($path = preg_replace("~.*/~", "", $_SERVER['REQUEST_URI'])) !== "login" && $path !== "register") {
+    if (($path = preg_replace("~.*/~", "", $_SERVER["REQUEST_URI"])) !== "login" && $path !== "register") {
         $username = isset($_SESSION["sessionUser"]) ? $_SESSION["sessionUser"] : header("Location: login.php");
         return $username;
     }

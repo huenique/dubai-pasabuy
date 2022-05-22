@@ -1,0 +1,15 @@
+.section-default {
+    display: none;
+} 
+
+.item-card {
+    width: 18rem;
+}
+
+.idiom-pointer {
+    cursor: pointer;
+}
+
+.input-default {
+    display: none;
+}
