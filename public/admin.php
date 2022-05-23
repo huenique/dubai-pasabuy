@@ -62,9 +62,23 @@ function display_table(
 
         // Create the row options. Edit buttons and checkboxes included
         $checkboxName = $smallTitle . "Select[]";
+
+        // Only allow row edits for the products table. Update to other tables
+        // should only be performed either by the system or customer
+        $editOption = ($smallTitle !== "product") ? ""
+        : <<<EDIT_BTN
+        <i
+            data-feather="edit"
+            class="mx-1 idiom-pointer"
+            data-bs-toggle="modal"
+            data-bs-target="#edit-modal"
+            id="edit-trigger-{$row["id"]}-{$row["access"]}-{$row["name"]}-{$row["cost_aed"]}-{$row["cost_php"]}"
+        />
+        EDIT_BTN;
+
         $tableRows .= <<<ROW_OPTIONS
         <td class="$columnWidth">
-            <i data-feather="edit" class="mx-1 idiom-pointer"></i>
+            $editOption
             <th scope="col">
                 <input
                     class="form-check-input $smallTitle"
@@ -79,6 +93,16 @@ function display_table(
         ROW_OPTIONS;
         $tableRows .= "</tr>";
     }
+
+    // Only enable row inserts for products table
+    $insertAction = ($smallTitle !== "product") ? ""
+    : <<<INSERT_ACTION
+    <li>
+        <button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#insert-modal">
+            <i class="feather-default" data-feather="plus-circle"></i> Insert new {$smallTitle}
+        </button>
+    </li>
+    INSERT_ACTION;
 
     echo <<<TITLE_AND_ACTIONS
     <div class="d-flex mb-5">
@@ -97,11 +121,7 @@ function display_table(
                         <i class="feather-default" data-feather="trash"></i>Delete selected
                     </button>
                 </li>
-                <li>
-                    <a class="dropdown-item" href="#">
-                        <i class="feather-default" data-feather="plus-circle"></i> Insert new {$smallTitle}
-                    </a>
-                </li>
+                $insertAction
             </ul>
         </div>
     </div>
@@ -206,19 +226,46 @@ if (isset($_POST["adminUser"])) {
     $_SESSION["sessionAdmin"] = $_POST["adminPassw"];
 }
 
+// Update products table row on admin request
+if (isset($_POST["targetRowId"])) {
+
+    $id = $_POST["targetRowId"];
+    $name = $_POST["productName"];
+    $costAed = $_POST["costAed"] ? $_POST["costAed"] : null;
+    $costPhp = $_POST["costPhp"] ? $_POST["costPhp"] : null;
+    $access = $_POST["productAccess"];
+
+    $stmt = $conn->prepare("UPDATE products SET `name`=?,cost_aed=?,cost_php=?,access=? WHERE id=?");
+    $stmt->bind_param("sddsi", $name, $costAed, $costPhp, $access, $id);
+    $stmt->execute();
+}
+
+// Insert row into products table on admin request
+if (isset($_POST["newRowId"])) {
+
+    $name = $_POST["productName"];
+    $costAed = $_POST["costAed"] ? $_POST["costAed"] : null;
+    $costPhp = $_POST["costPhp"] ? $_POST["costPhp"] : null;
+    $access = $_POST["productAccess"];
+
+    $stmt = $conn->prepare("INSERT INTO products (`name`,cost_aed,cost_php,access) VALUES (?,?,?,?)");
+    $stmt->bind_param("sdds", $name, $costAed, $costPhp, $access);
+    $stmt->execute();
+}
+
 // Delete the selected rows from the db
 if (isset($_POST["delete-selected"])) {
     if (isset($_POST["customerSelect"])) {
         foreach ($_POST["customerSelect"] as $id) {
-            mysqli_query($conn, "DELETE FROM customers WHERE id='$id'");
+            $conn->query("DELETE FROM customers WHERE id='$id'");
         }
     } elseif (isset($_POST["productSelect"])) {
         foreach ($_POST["productSelect"] as $id) {
-            mysqli_query($conn, "DELETE FROM products WHERE id='$id'");
+            $conn->query("DELETE FROM products WHERE id='$id'");
         }
     } elseif (isset($_POST["orderSelect"])) {
         foreach ($_POST["orderSelect"] as $id) {
-            mysqli_query($conn, "DELETE FROM orders WHERE id='$id'");
+            $conn->query("DELETE FROM orders WHERE id='$id'");
         }
     }
 }
@@ -293,7 +340,7 @@ if (isset($_POST["delete-selected"])) {
                             Customers
                         </a>
                     </li>
-                    <li class="nav-item" onclick="alert('not yet implemented')">
+                    <li class="nav-item">
                         <a class="nav-link" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2" aria-hidden="true">
                                 <line x1="18" y1="20" x2="18" y2="10"></line>
@@ -375,30 +422,130 @@ if (isset($_POST["delete-selected"])) {
     </div>
 
     <!-- Modal for editing table rows -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="update-row-modal" aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="edit-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="update-row-modal">Modal title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="edit-modal">Update Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Update-products-table-row Form -->
+                <form method="post">
+                    <div class="modal-body">
+                        <input class="input-default" id="modal-target-row" name="targetRowId" value="">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Name</span>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="curr-product-name"
+                                name="productName"
+                                value=""
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Cost AED</span>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="curr-cost-aed"
+                                name="costAed"
+                                value=""
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Cost PHP</span>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="curr-cost-php"
+                                name="costPhp"
+                                value=""
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Access</span>
+                            <select class="form-select" name="productAccess">
+                                <option id="current-access" selected></option>
+                                <option id="alt-access" value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+                <!-- /Update-products-table-row Form -->
             </div>
         </div>
     </div>
     <!-- /Modal for editing table rows -->
+
+    <!-- Modal for inserting table rows -->
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="insert-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="insert-modal">Insert Porduct</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Insert-products-table-row Form -->
+                <form method="post">
+                    <div class="modal-body">
+                        <input class="input-default" id="modal-target-row" name="newRowId" value="">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Name</span>
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="productName"
+                                value=""
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Cost AED</span>
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="costAed"
+                                value=""
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Cost PHP</span>
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="costPhp"
+                                value=""
+                            />
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Access</span>
+                            <select class="form-select" name="productAccess">
+                                <option value="next" selected>next</option>
+                                <option value="onhand">onhand</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+                <!-- /Insert-products-table-row Form -->
+            </div>
+        </div>
+    </div>
+    <!-- /Modal for inserting table rows -->
+
 </div>
 
 <!-- AuthN user -->
 <?php } else {?>
 <div class="container">
-    <div class="card">
+    <div class="card w-25">
         <div class="m-2">
             <form method="post">
                 <div class="mb-3">
@@ -420,7 +567,7 @@ if (isset($_POST["delete-selected"])) {
 <script>
     feather.replace()
 </script>
-<script>
+<script defer>
     // Helpers for page navigation.
 
     function resetDisplay() {
@@ -451,4 +598,30 @@ if (isset($_POST["delete-selected"])) {
     function showSummary() {
 
     }
+
+    document.getElementById("edit-modal").addEventListener("show.bs.modal", (e) => {
+        const currNameInp = document.getElementById("curr-product-name");
+        const currCostAedInp = document.getElementById("curr-cost-aed");
+        const currCostPhpInp = document.getElementById("curr-cost-php");
+        const currAccessInp = document.getElementById("current-access");
+        const altAccessInp = document.getElementById("alt-access");
+
+        // Extract row data from modal trigger
+        const data = (e.relatedTarget.id).split("-");
+
+        currAccess = data[3];
+        altAccess = (currAccess === "next") ? "onhand" : "next";
+
+        // Inject modal values
+        document.getElementById("modal-target-row").value = data[2];
+
+        currAccessInp.value = currAccess;
+        currAccessInp.innerText = currAccess;
+        altAccessInp.value = altAccess;
+        altAccessInp.innerText = altAccess;
+
+        currNameInp.value = data[4];
+        currCostAedInp.value = data[5];
+        currCostPhpInp.value = data[6];
+    });
 </script>
