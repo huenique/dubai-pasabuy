@@ -27,14 +27,15 @@ function display_cart_products(mysqli $conn, string $username)
 
     if ($cartDec) {
         foreach ($cartDec as $productId => $amount) {
-            $product = $conn->query("SELECT `name`,cost_php FROM products WHERE id='$productId'")->fetch_assoc();
+            $product = $conn->query("SELECT `name`,cost_php,media FROM products WHERE id='$productId'")->fetch_assoc();
             $productName = $product ? $product["name"] : "";
+            $productImage = $product["media"] ? $product["media"] : "static/img/product.png";
             $productCostPhp = $product ? number_format($product["cost_php"] * $amount, 2) : "";
 
             echo <<<CART_ITEMS
             <div class="mt-2 d-flex">
                 <div class="card item-card me-5">
-                    <img src="static/img/product.png" class="img-thumbnail" alt="..." />
+                    <img src="$productImage" class="card-img-top" alt="..." />
                 </div>
                 <div class="d-flex flex-column">
                     <h5>$productName</h5>

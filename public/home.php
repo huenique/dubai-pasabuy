@@ -104,6 +104,7 @@ function display_nextbatch(mysqli $conn)
             <?php display_onhand($conn)?>
         </div>
     </div>
+    <div id="content-divider"></div>
     <div class="section-default" id="next-products">
         <div class="d-flex align-content-start flex-wrap">
             <?php display_nextbatch($conn)?>
@@ -114,6 +115,7 @@ function display_nextbatch(mysqli $conn)
 
 <script>
 function resetDisplay() {
+    document.getElementById("content-divider").innerHTML = null;
     let sections = document.querySelectorAll(".section-default");
     sections.forEach(section => {
         section.style.display = "none";
@@ -123,6 +125,7 @@ function resetDisplay() {
 function displayAll() {
     resetDisplay();
     document.getElementById("current-products").style.display = "unset";
+    document.getElementById("content-divider").innerHTML = "<hr class='divider'>";
     document.getElementById("next-products").style.display = "unset";
 }
 

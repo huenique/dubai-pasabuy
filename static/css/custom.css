@@ -13,3 +13,10 @@
 .input-default {
     display: none;
 }
+
+/* Allows for bootstrap cards to be the same size */
+.card-img-top {
+    width: 100%;
+    height: 30vh;
+    object-fit: contain;
+}
