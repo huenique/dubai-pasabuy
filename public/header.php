@@ -10,5 +10,10 @@
 <body>
     <script src="./static/bootstrap.bundle.min.js" rel="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script>
+        if ( window.history.replaceState ) {
+            window.history.replaceState(null,null, window.location.href );
+        }
+    </script>
 </body>
 </html>

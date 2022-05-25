@@ -596,8 +596,3 @@ if (isset($_POST["delete-selected"])) {
         currCostPhpInp.value = data[5];
     });
 </script>
-<script>
-    if ( window.history.replaceState ) {
-        window.history.replaceState(null,null, window.location.href );
-    }
-</script>
