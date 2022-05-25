@@ -98,7 +98,8 @@ function display_table(
         // characters. So instead of adding the product name value with special
         // characters to the id attrib, we add that value to an invisible input
         // tag where the modal can retreive said value.
-        $itemName = "<input type='text' id='currname-{$row["id"]}' class='input-default' value='{$row["name"]}'>";
+        $itemName = $smallTitle !== "product" ? ""
+        : "<input type='text' id='currname-{$row["id"]}' class='input-default' value='{$row["name"]}'>";
 
         $editOption = ($smallTitle !== "product") ? ""
         : <<<EDIT_BTN

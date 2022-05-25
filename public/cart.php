@@ -111,7 +111,6 @@ function set_product_quantity(mysqli $conn, string $username, string $productId,
     $updateStmt = $conn->prepare("UPDATE customers SET cart=? WHERE username=?");
     $updateStmt->bind_param("ss", $cart, $username);
     $updateStmt->execute();
-    echo "<script>alert('cart updated')</script>";
 }
 
 function remove_cart_item(mysqli $conn, string $username, string $productId)
@@ -122,7 +121,6 @@ function remove_cart_item(mysqli $conn, string $username, string $productId)
     $updateStmt = $conn->prepare("UPDATE customers SET cart=? WHERE username=?");
     $updateStmt->bind_param("ss", $cart, $username);
     $updateStmt->execute();
-    echo "<script>alert('cart updated')</script>";
 }
 
 /** Remove specified item from cart. */

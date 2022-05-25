@@ -86,8 +86,6 @@ function get_cart_cost(mysqli $conn, string $username): void
     $stmt->execute();
     $results = $stmt->get_result()->fetch_assoc();
 
-    echo "<script>alert('here')</script>";
-
     if ($results) {
         $cart = json_decode($results["cart"], true);
     } else {
@@ -187,6 +185,7 @@ if (isset($_POST["pay"])) {
     $stmt = $conn->prepare($query);
     $stmt->bind_param("isdddbb", $customerId, $orderedItems, $fee, $total, $totalCollection, $delivered, $paid);
     $stmt->execute();
+    header("Location: cart");
 }
 ?>
 <title>My Cart – Checkout</title>
@@ -197,7 +196,7 @@ if (isset($_POST["pay"])) {
     <div class="w-25 mt-5" id="gcash-container"></div>
     <form method="post">
         <input class="input-default" name="pay">
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary mt-2">
             <i class="feather-default me-2" data-feather="credit-card"></i>
             Previous Payment Information
         </button>

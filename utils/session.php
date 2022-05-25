@@ -10,7 +10,7 @@ function get_session_user() {
     $path = preg_replace("~.*/~", "", $_SERVER['REQUEST_URI']);
 
     if (($path === "login" || $path === "register") && isset($_SESSION["sessionUser"])) {
-        echo header("Location: home.php");
+        echo header("Location: home");
         return null;
     }
 

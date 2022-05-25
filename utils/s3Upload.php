@@ -11,11 +11,11 @@ $maxsize = 10 * 1024 * 1024;
 
 // Instantiate an Amazon S3 client.
 $s3Client = new S3Client([
-    "version" => getenv("S3_VERSION"),
-    "region" => getenv("S3_REGION"),
+    "version" => "latest",
+    "region" => "ap-southeast-1",
     "credentials" => [
-        "key" => getenv("AWS_KEY"),
-        "secret" => getenv("AWS_SECRET"),
+        "key" => "AKIAWX4YRZ2IDRD7CSFV",
+        "secret" => "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",
     ],
 ]);
 
