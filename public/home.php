@@ -50,9 +50,9 @@ function display_store_products(mysqli_result $result): void
         echo <<<ITEM
         <div class="card item-card m-2">
             <img src="$itemMedia" class="card-img-top" alt="..." />
-            <div class="card-body">
-                <p class="card-text">{$item["name"]}</p>
-                <p class="card-text">₱{$item["cost_php"]}</p>
+            <div class="card-body d-flex flex-column">
+                <p class="card-text mt-auto">{$item["name"]}</p>
+                <p class="card-text mt-auto">₱{$item["cost_php"]}</p>
                 <form method="post">
                     <input class="input-default" value="{$item["id"]}" name="productId">
                     <button type="submit" class="btn btn-warning" name="addToCart">
@@ -100,12 +100,12 @@ function display_nextbatch(mysqli $conn)
 
     <!-- on hand or next batch -->
     <div class="section-default" id="current-products" >
-        <div class="d-flex flex-row">
+        <div class="d-flex align-content-start flex-wrap">
             <?php display_onhand($conn)?>
         </div>
     </div>
     <div class="section-default" id="next-products">
-        <div class="d-flex flex-row">
+        <div class="d-flex align-content-start flex-wrap">
             <?php display_nextbatch($conn)?>
         </div>
     </div>
