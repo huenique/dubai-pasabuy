@@ -26,7 +26,7 @@ require_once "header.php";
             Buy goods from abroad and we'll ship them for you!
           </p>
           <div class="cta">
-            <a href="login.php" class="btn">Get started</a>
+            <a href="login" class="btn">Get started</a>
           </div>
         </div>
 

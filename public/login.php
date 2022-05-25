@@ -52,6 +52,6 @@ if (isset($_POST["login"])) {
                 LOG IN
             </button>
         </form>
-        <a href="register.php">New here? Sign Up!</a>
+        <a href="register">New here? Sign Up!</a>
     </div>
 </div>

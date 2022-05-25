@@ -65,7 +65,7 @@ $registerPage = <<<REGISTER
                 value="SIGN UP"
             />
         </form>
-        <a href="login.php">Already have an account?</a>
+        <a href="login">Already have an account?</a>
     </div>
 </div>
 REGISTER;
@@ -82,9 +82,9 @@ if (isset($_POST["signup"])) {
     // ensure customers recognize their password
     if ($password !== $_POST["confirmPassword"]) {
         $_SESSION["registerUsername"] = $username;
-        echo header("Location: register.php");
+        echo header("Location: register");
     } else {
-        // prevent unexpected behaviors caused by session variables created or modified outside login.php
+        // prevent unexpected behaviors caused by session variables created or modified outside login
         session_unset();
         session_destroy();
 
@@ -95,7 +95,7 @@ if (isset($_POST["signup"])) {
             echo "<script>alert('email already registered')</script>";
         } else {
             $insertStmt->execute();
-            echo header("Location: login.php");
+            echo header("Location: login");
         }
     }
 }
