@@ -72,7 +72,12 @@ function display_table(
                     $itemDisplay = "";
                     foreach (json_decode($row[$colField], true) as $items) {
                         foreach ($items as $itemName => $value) {
-                            $itemDisplay .= "<p class='fst-italic fw-bolder text-decoration-underline'>$itemName</p>" . implode("<br>", $items[$itemName]) . "<br><br>";
+                            $itemInfo = implode("<br>", $items[$itemName]);
+                            $itemDisplay .= <<<ITEM_DISPLAY
+                            <p class='fst-italic fw-bolder text-decoration-underline'>$itemName</p>
+                            $itemInfo
+                            <br><br>
+                            ITEM_DISPLAY;
                         }
                     }
                     $tableRows .= $itemDisplay;
@@ -87,6 +92,14 @@ function display_table(
 
         // Only allow row edits for the products table. Update to other tables
         // should only be performed either by the system or customer
+
+        // Prevent replacement errors raised by feather icons/replace.js
+        // Feather icons raises an error if the id attrib contains special
+        // characters. So instead of adding the product name value with special
+        // characters to the id attrib, we add that value to an invisible input
+        // tag where the modal can retreive said value.
+        $itemName = "<input type='text' id='currname-{$row["id"]}' class='input-default' value='{$row["name"]}'>";
+
         $editOption = ($smallTitle !== "product") ? ""
         : <<<EDIT_BTN
         <i
@@ -94,7 +107,7 @@ function display_table(
             class="mx-1 idiom-pointer"
             data-bs-toggle="modal"
             data-bs-target="#edit-modal"
-            id="edit-trigger-{$row["id"]}-{$row["access"]}-{$row["name"]}-{$row["cost_aed"]}-{$row["cost_php"]}"
+            id="edit-trigger-{$row["id"]}-{$row["access"]}-{$row["cost_aed"]}-{$row["cost_php"]}"
         />
         EDIT_BTN;
 
@@ -111,6 +124,7 @@ function display_table(
                 />
                 <label for="{$row["id"]}"></label>
             </th>
+            $itemName
         </td>
         ROW_OPTIONS;
         $tableRows .= "</tr>";
@@ -519,6 +533,10 @@ if (isset($_POST["delete-selected"])) {
     // Helpers for page navigation.
     showSummary();
 
+    function retainValues() {
+        this.setState
+    }
+
     function resetDisplay() {
         let sections = document.querySelectorAll(".section-default");
         sections.forEach(section => {
@@ -558,8 +576,8 @@ if (isset($_POST["delete-selected"])) {
 
         // Extract row data from modal trigger
         const data = (e.relatedTarget.id).split("-");
-        const currAccess = data[3];
         const rowId = data[2];
+        const currAccess = data[3];
         const altAccess = (currAccess === "next") ? "onhand" : "next";
 
         // Inject modal values
@@ -571,9 +589,10 @@ if (isset($_POST["delete-selected"])) {
         altAccessInp.value = altAccess;
         altAccessInp.innerText = altAccess;
 
-        currNameInp.value = data[4];
-        currCostAedInp.value = data[5];
-        currCostPhpInp.value = data[6];
+
+        currNameInp.value = document.getElementById(`currname-${rowId}`).value;
+        currCostAedInp.value = data[4];
+        currCostPhpInp.value = data[5];
     });
 </script>
 <script>
