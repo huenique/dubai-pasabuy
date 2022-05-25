@@ -1,12 +1,13 @@
 <?php
-function get_db_connection() {
+function get_db_connection()
+{
     $cleardb_url = parse_url(getenv("CLEARDB_DATABASE_URL"));
     $cleardb_server = $cleardb_url["host"];
     $cleardb_username = $cleardb_url["user"];
     $cleardb_password = $cleardb_url["pass"];
-    $cleardb_db = substr($cleardb_url["path"],1);
+    $cleardb_db = substr($cleardb_url["path"], 1);
 
-    // During deployment, uncomment the line of codes below comment the ones above 
+    // During deployment, uncomment the line of codes below comment the ones above
     // Replace the values as needed
 
     // $cleardb_server = "127.0.0.1";
@@ -25,4 +26,3 @@ function get_db_connection() {
 }
 
 $conn = get_db_connection();
-?>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 18, 2022 at 05:46 PM
+-- Generation Time: May 25, 2022 at 10:10 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.2
 
@@ -39,7 +39,8 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `username`, `password`, `cart`) VALUES
-(20, 'test@gg.com', '123', '{\"30\":\"7\",\"175\":\"3\"}');
+(20, 'test@gg.com', '123', '[]'),
+(21, 'mindykayzara05@gmail.com', 'mindy', '{\"175\":\"0\"}');
 
 -- --------------------------------------------------------
 
@@ -49,7 +50,7 @@ INSERT INTO `customers` (`id`, `username`, `password`, `cart`) VALUES
 
 CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `customer_id` int(11) NOT NULL,
   `item` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `pasabuy_fee` decimal(15,2) NOT NULL,
   `total_value` decimal(15,2) NOT NULL,
@@ -69,16 +70,9 @@ CREATE TABLE `products` (
   `name` varchar(128) NOT NULL,
   `cost_aed` decimal(15,2) DEFAULT NULL,
   `cost_php` decimal(15,2) DEFAULT NULL,
-  `access` tinytext NOT NULL
+  `access` tinytext NOT NULL,
+  `media` varchar(2047) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `products`
---
-
-INSERT INTO `products` (`id`, `name`, `cost_aed`, `cost_php`, `access`) VALUES
-(30, 'Cologne', NULL, NULL, 'next'),
-(175, 'Perfume', NULL, NULL, 'onhand');
 
 --
 -- Indexes for dumped tables
@@ -110,13 +104,19 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT for table `products`
+--
+ALTER TABLE `products`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

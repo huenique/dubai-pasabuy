@@ -29,7 +29,7 @@ function add_to_cart(mysqli $conn, string $username, string $productId)
     if (array_key_exists($productId, $cartDec)) {
         echo "<script>alert('product already added to cart')</script>";
     } else {
-        $cartDec += [$productId => "0"];
+        $cartDec += [$productId => "1"];
         $cart = json_encode($cartDec);
         $updateStmt = $conn->prepare("UPDATE customers SET cart=? WHERE username=?");
         $updateStmt->bind_param("ss", $cart, $username);
@@ -44,20 +44,23 @@ function add_to_cart(mysqli $conn, string $username, string $productId)
  */
 function display_store_products(mysqli_result $result): void
 {
-    foreach ($result->fetch_all(MYSQLI_ASSOC) as $row) {
+    foreach ($result->fetch_all(MYSQLI_ASSOC) as $item) {
+        $media = $item["media"];
+        $itemMedia = $media ? $media : "./static/img/product.png";
         echo <<<ITEM
-        <div class="card item-card">
-            <img src="./static/img/product.png" class="card-img-top" alt="..." />
+        <div class="card item-card m-2">
+            <img src="$itemMedia" class="card-img-top" alt="..." />
             <div class="card-body">
-                <p class="card-text">{$row["name"]}</p>
+                <p class="card-text">{$item["name"]}</p>
+                <p class="card-text">₱{$item["cost_php"]}</p>
+                <form method="post">
+                    <input class="input-default" value="{$item["id"]}" name="productId">
+                    <button type="submit" class="btn btn-warning" name="addToCart">
+                        ADD TO CART<i class="cart-ico ms-2 mb-1" data-feather="shopping-cart"></i>
+                    </button>
+                </form>
             </div>
         </div>
-        <form method="post">
-            <input class="input-default" value="{$row["id"]}" name="productId">
-            <button type="submit" class="btn btn-warning" name="addToCart">
-                ADD TO CART<i data-feather="shopping-cart"></i>
-            </button>
-        </form>
         ITEM;
     }
     $result->free_result();
@@ -73,10 +76,19 @@ function display_nextbatch(mysqli $conn)
     display_store_products($conn->query("SELECT * FROM products WHERE access='next'"));
 }
 ?>
+<style>
+    .cart-ico {
+        width: 18px;
+        height: 18px;
+    }
+</style>
 <title>Dubai Pasabuy</title>
 <?php display_navbar()?>
 <div class="container">
-    <h1>Pasabuy Today</h1>
+    <div class="my-3 d-flex">
+        <h1 class="my-3">Pasabuy Today</h1>
+        <div class="ms-auto"></div>
+    </div>
 
     <!-- tools for navigating the dashboard -->
     <div class="btn-group btn-group-lg" role="group" aria-label="menu">
@@ -87,8 +99,16 @@ function display_nextbatch(mysqli $conn)
     <!-- /tools for navigating the dashboard -->
 
     <!-- on hand or next batch -->
-    <div class="section-default" id="current-products" ><?php display_onhand($conn)?></div>
-    <div class="section-default" id="next-products"><?php display_nextbatch($conn)?></div>
+    <div class="section-default" id="current-products" >
+        <div class="d-flex flex-row">
+            <?php display_onhand($conn)?>
+        </div>
+    </div>
+    <div class="section-default" id="next-products">
+        <div class="d-flex flex-row">
+            <?php display_nextbatch($conn)?>
+        </div>
+    </div>
     <!-- /on hand or next batch -->
 </div>
 
@@ -102,6 +122,8 @@ function resetDisplay() {
 
 function displayAll() {
     resetDisplay();
+    document.getElementById("current-products").style.display = "unset";
+    document.getElementById("next-products").style.display = "unset";
 }
 
 function displayCurrentItems() {

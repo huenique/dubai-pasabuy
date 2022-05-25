@@ -1,5 +1,6 @@
 {
     "require": {
-        "adyen/php-api-library": "^12.2"
+        "adyen/php-api-library": "^12.2",
+        "aws/aws-sdk-php": "^3.222"
     }
 }

@@ -7,7 +7,8 @@ if (isset($_GET["logoutUser"])) {
 }
 
 /** Navbar component */
-function display_navbar() {
+function display_navbar()
+{
     echo <<<NAVBAR
     <style>
         .sneaky {
@@ -19,7 +20,7 @@ function display_navbar() {
     </style>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-        <a class="navbar-brand" href="home.php">Dubai Pasabuy</a>
+        <a class="navbar-brand" href="home">Dubai Pasabuy</a>
             <button
                 class="navbar-toggler"
                 type="button"
@@ -34,7 +35,7 @@ function display_navbar() {
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="cart.php">My Cart</a>
+                        <a class="nav-link" href="cart">My Cart</a>
                     </li>
                 </ul>
                 <span class="nav-item">

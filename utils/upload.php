@@ -1,6 +1,6 @@
 <?php
 
-require_once "paths.php";
+require_once "path.php";
 
 $newFilepath;
 
