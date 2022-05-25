@@ -17,7 +17,7 @@ if (isset($_GET["login"])) {
     if ($usercred) {
         if ($usercred["password"] != $password) {} else {
             $_SESSION['sessionUser'] = $usercred["username"];
-            echo header("Location: home.php");
+            echo header("Location: home");
         }
     } else {}
     echo "<script>alert('incorrect email or password!')</script>";

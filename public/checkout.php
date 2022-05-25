@@ -86,6 +86,8 @@ function get_cart_cost(mysqli $conn, string $username): void
     $stmt->execute();
     $results = $stmt->get_result()->fetch_assoc();
 
+    echo "<script>alert('here')</script>";
+
     if ($results) {
         $cart = json_decode($results["cart"], true);
     } else {
@@ -93,6 +95,7 @@ function get_cart_cost(mysqli $conn, string $username): void
     }
 
     if (!$cart) {
+        echo "<script>alert('your cart is empty!')</script>";
         header("Location: cart");
     }
 
@@ -150,7 +153,6 @@ if (isset($_GET["checkout"])) {
         $_SESSION["adyen_session_data"] = $result["sessionData"];
 
         generate_config();
-        header("Location: cart");
     } catch (Exception $err) {}
 }
 
