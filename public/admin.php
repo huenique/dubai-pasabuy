@@ -246,11 +246,13 @@ $path = preg_replace("~.*/~", "", $_SERVER['REQUEST_URI']);
 // TODO: impl proper authentication
 if (isset($_POST["adminUser"])) {
     $_SESSION["sessionAdmin"] = $_POST["adminUser"];
+    $_POST = array();
 }
 
 if (isset($_GET["signoutAdmin"])) {
     $_SESSION["sessionAdmin"] = null;
     header("Location: admin");
+    $_GET = array();
 }
 
 // Update products table row on admin request
@@ -265,6 +267,7 @@ if (isset($_POST["targetRowId"])) {
     $stmt = $conn->prepare("UPDATE products SET `name`=?,cost_aed=?,cost_php=?,access=? WHERE id=?");
     $stmt->bind_param("sddsi", $name, $costAed, $costPhp, $access, $id);
     $stmt->execute();
+    $_POST = array();
 }
 
 // Insert row into products table on admin request
@@ -278,6 +281,7 @@ if (isset($_POST["newRowId"])) {
     $stmt = $conn->prepare("INSERT INTO products (`name`,cost_aed,cost_php,access) VALUES (?,?,?,?)");
     $stmt->bind_param("sdds", $name, $costAed, $costPhp, $access);
     $stmt->execute();
+    $_POST = array();
 }
 
 // Delete the selected rows from the db
@@ -295,6 +299,7 @@ if (isset($_POST["delete-selected"])) {
             $conn->query("DELETE FROM orders WHERE id='$id'");
         }
     }
+    $_POST = array();
 }
 ?>
 <title>Dashboard</title>
@@ -570,4 +575,9 @@ if (isset($_POST["delete-selected"])) {
         currCostAedInp.value = data[5];
         currCostPhpInp.value = data[6];
     });
+</script>
+<script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState(null,null, window.location.href );
+    }
 </script>
