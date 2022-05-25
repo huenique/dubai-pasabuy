@@ -6,9 +6,9 @@ require_once __DIR__ . "/../utils/session.php";
 
 $_ = get_session_user();
 
-if (isset($_GET["login"])) {
-    $username = $_GET["username"];
-    $password = $_GET["password"];
+if (isset($_POST["login"])) {
+    $username = $_POST["username"];
+    $password = $_POST["password"];
 
     $conn = get_db_connection();
     $user = $conn->query("SELECT * FROM customers WHERE username='$username'") or die($conn->error);
@@ -19,8 +19,9 @@ if (isset($_GET["login"])) {
             $_SESSION['sessionUser'] = $usercred["username"];
             echo header("Location: home");
         }
-    } else {}
-    echo "<script>alert('incorrect email or password!')</script>";
+    } else {
+        echo "<script>alert('incorrect email or password!')</script>";
+    }
 }
 ?>
 <title>Login</title>
@@ -30,7 +31,7 @@ if (isset($_GET["login"])) {
 </div>
 <div class="container">
     <div class="form-container">
-        <form method="get">
+        <form method="post">
             <div class="field-input">
                 <label class="form-label">E-mail:</label>
                 <input
