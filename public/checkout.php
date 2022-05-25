@@ -156,14 +156,14 @@ if (isset($_GET["checkout"])) {
 
 if (isset($_POST["pay"])) {
     // get customer id
-    $result = $conn->query("SELECT id,cart FROM customers WHERE username='" . $_SESSION["sessionUser"] . "'");
+    $result = $conn->query("SELECT id,cart FROM customers WHERE username='$username'");
     $customer = $result->fetch_assoc();
     $customerId = $customer["id"];
     $items = array();
     $collection = array();
     $fee = 50;
-    $delivered = false;
-    $paid = true;
+    $delivered = 0;
+    $paid = 1;
 
     foreach (json_decode($customer["cart"], true) as $productId => $amount) {
         $product = $conn->query("SELECT `name`,cost_php FROM products WHERE id='$productId'")->fetch_assoc();
@@ -179,12 +179,12 @@ if (isset($_POST["pay"])) {
     $orderedItems = json_encode($items);
 
     $query = <<<STMT
-    INSERT INTO orders (customer_id,item,pasabuy_fee,total_value,total_collection,delivered,paid)
+    INSERT INTO orders (customer_id, item, pasabuy_fee, total_value, total_collection, delivered, paid)
     VALUES (?,?,?,?,?,?,?)
     STMT;
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("isdddbb", $customerId, $orderedItems, $fee, $total, $totalCollection, $delivered, $paid);
-    $stmt->execute();
+    $stmt->bind_param("isdddii", $customerId, $orderedItems, $fee, $total, $totalCollection, $delivered, $paid);
+    $result = $stmt->execute();
     header("Location: cart");
 }
 ?>
