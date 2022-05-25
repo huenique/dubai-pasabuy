@@ -424,12 +424,14 @@ if (isset($_POST["delete-selected"])) {
                     </div>
                 </form>
                 <form action="utils/s3Upload" method="post" enctype="multipart/form-data">
-                    <h2>PHP Upload File</h2>
-                    <label for="file_name">Filename:</label>
-                    <input type="file" name="anyfile" id="anyfile">
-                    <input class="input-default" type="text" id="upload-product-id" name="productId" value="">
-                    <input type="submit" name="submitProductImg" value="Upload">
-                    <p><strong>Note:</strong> Only .jpg, .jpeg, .gif, .png formats allowed to a max size of 5 MB.</p>
+                    <div class="modal-body border-top">
+                        <p class="">Upload product media:</p>
+                        <p>Note: Only .jpg, .jpeg, .gif, .png formats allowed to a max size of 5 MB.</p>
+                        <label for="file_name">Filename:</label>
+                        <input type="file" name="anyfile" id="anyfile">
+                        <input class="input-default" type="text" id="upload-product-id" name="productId" value="">
+                        <input type="submit" name="submitProductImg" value="Upload">
+                    </div>
                 </form>
                 <!-- /Update-products-table-row Form -->
             </div>
@@ -472,13 +474,6 @@ if (isset($_POST["delete-selected"])) {
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
-                </form>
-                <form action="utils/s3Upload" method="post" enctype="multipart/form-data">
-                    <h2>PHP Upload File</h2>
-                    <label for="file_name">Filename:</label>
-                    <input type="file" name="anyfile" id="anyfile">
-                    <input type="submit" name="submit" value="Upload">
-                    <p><strong>Note:</strong> Only .jpg, .jpeg, .gif, .png formats allowed to a max size of 5 MB.</p>
                 </form>
                 <!-- /Insert-products-table-row Form -->
             </div>
