@@ -64,7 +64,7 @@ if (isset($_POST["submitProductImg"])) {
             "Bucket" => $bucket,
             "Key" => $key,
             "Body" => fopen($filePath, "r"),
-            "ACL" => "public-read", // make file "public"
+            "ACL" => "public-read",
         ]);
         $imgPath = $result->get("ObjectURL");
         $conn->query("UPDATE products SET media='$imgPath' WHERE id='$productId'");

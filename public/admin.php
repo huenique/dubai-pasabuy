@@ -136,7 +136,7 @@ function display_table(
     : <<<INSERT_ACTION
     <li>
         <button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#insert-modal">
-            <i class="feather-default" data-feather="plus-circle"></i> Insert new {$smallTitle}
+            <i class="feather-default" data-feather="plus-circle"></i> Add new {$smallTitle}
         </button>
     </li>
     INSERT_ACTION;
