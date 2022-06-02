@@ -11,6 +11,7 @@ $maxsize = 10 * 1024 * 1024;
 
 // Instantiate an Amazon S3 client.
 $s3Client = new S3Client([
+    "endpoint" => "https://s3.filebase.com",
     "version" => getenv("S3_VERSION"),
     "region" => getenv("S3_REGION"),
     "credentials" => [
@@ -63,8 +64,9 @@ if (isset($_POST["submitProductImg"])) {
         $result = $s3Client->putObject([
             "Bucket" => $bucket,
             "Key" => $key,
-            "Body" => fopen($filePath, "r"),
+            // "Body" => fopen($filePath, "r"),
             "ACL" => "public-read",
+            'SourceFile' => $filePath,
         ]);
         $imgPath = $result->get("ObjectURL");
         $conn->query("UPDATE products SET media='$imgPath' WHERE id='$productId'");
