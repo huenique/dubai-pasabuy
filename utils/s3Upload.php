@@ -11,7 +11,7 @@ $maxsize = 10 * 1024 * 1024;
 
 // Instantiate an Amazon S3 client.
 $s3Client = new S3Client([
-    "endpoint" => "https://s3.filebase.com",
+    // "endpoint" => "https://s3.filebase.com",
     "version" => getenv("S3_VERSION"),
     "region" => getenv("S3_REGION"),
     "credentials" => [
