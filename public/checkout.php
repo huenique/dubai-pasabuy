@@ -123,36 +123,36 @@ function get_cart_cost(mysqli $conn, string $username): void
     SUMMARY;
 }
 
-if (isset($_GET["checkout"])) {
-    try {
-        // Set up the client as a singleton resource
-        $client = new \Adyen\Client();
-        $client->setXApiKey(getenv("AYDEN_API_KEY"));
-        $client->setEnvironment(\Adyen\Environment::TEST);
-        $client->setTimeout(30);
+// if (isset($_GET["checkout"])) {
+//     try {
+//         // Set up the client as a singleton resource
+//         $client = new \Adyen\Client();
+//         $client->setXApiKey(getenv("AYDEN_API_KEY"));
+//         $client->setEnvironment(\Adyen\Environment::TEST);
+//         $client->setTimeout(30);
 
-        // Create a payment resource
-        // We will receive the payment outcome asynchronously, in an AUTHORISATION webhook.
-        $service = new \Adyen\Service\Checkout($client);
-        $json = '{
-            "merchantAccount": "MSEUFAccountECOM",
-            "amount": {
-                "value": 100,
-                "currency": "PHP"
-            },
-            "returnUrl": "http://dubai-pasabuy.heroku.com/checkout?order=randstr",
-            "reference": "PAYMENT_REFERENCE",
-            "countryCode": "PH"
-        }';
-        $params = json_decode($json, true);
-        $result = $service->sessions($params);
+//         // Create a payment resource
+//         // We will receive the payment outcome asynchronously, in an AUTHORISATION webhook.
+//         $service = new \Adyen\Service\Checkout($client);
+//         $json = '{
+//             "merchantAccount": "MSEUFAccountECOM",
+//             "amount": {
+//                 "value": 100,
+//                 "currency": "PHP"
+//             },
+//             "returnUrl": "http://dubai-pasabuy.heroku.com/checkout?order=randstr",
+//             "reference": "PAYMENT_REFERENCE",
+//             "countryCode": "PH"
+//         }';
+//         $params = json_decode($json, true);
+//         $result = $service->sessions($params);
 
-        $_SESSION["adyen_session_id"] = $result["id"];
-        $_SESSION["adyen_session_data"] = $result["sessionData"];
+//         $_SESSION["adyen_session_id"] = $result["id"];
+//         $_SESSION["adyen_session_data"] = $result["sessionData"];
 
-        generate_config();
-    } catch (Exception $err) {}
-}
+//         generate_config();
+//     } catch (Exception $err) {}
+// }
 
 if (isset($_POST["pay"])) {
     // get customer id
